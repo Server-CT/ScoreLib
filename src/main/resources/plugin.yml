@@ -1,0 +1,8 @@
+name: ScoreLib
+version: ${project.version}
+main: org.serverct.vl.Main
+description: ScoreLib
+website: https://github.com/Server-CT
+permissions:
+  scorelib.bypass:
+    description: 'Bypass Scores'
