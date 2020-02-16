@@ -3,6 +3,7 @@ package org.serverct.vl.analyzer;
 import org.bukkit.Bukkit;
 import org.serverct.vl.bean.Score;
 import org.serverct.vl.interfaces.Base;
+import org.serverct.vl.util.Category;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class Stat implements Base {
     private boolean readOnly;
     private String ID;
 
-    public Stat(boolean readOnly, String ID) {
+    public Stat(boolean readOnly, String ID, Category category) {
         this.ID = ID;
         this.readOnly = readOnly;
     }

@@ -6,6 +6,7 @@ import org.serverct.vl.Main;
 import org.serverct.vl.bean.Mode;
 import org.serverct.vl.events.ConditionsMetEvent;
 import org.serverct.vl.interfaces.Base;
+import org.serverct.vl.util.Category;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -23,19 +24,21 @@ public class Executor extends Stat implements Base {
                     Executor.super.setScore(a.getKey(), 0);
                 }
             });
-            Executor.super.Map.entrySet().forEach(a -> {
-                if (Acts.get(a.getValue().score)) {
-                    Main.i.getServer().getPluginManager().callEvent(new ConditionsMetEvent(Executor.super.getID(), a.getKey(), a.getValue().score));
-                }
-            });
+            if (mode.equals(Mode.CHECKER) || mode.equals(Mode.MIX)) {
+                Executor.super.Map.entrySet().forEach(a -> {
+                    if (Acts.get(a.getValue().score)) {
+                        Main.i.getServer().getPluginManager().callEvent(new ConditionsMetEvent(Executor.super.getID(), a.getKey(), a.getValue().score));
+                    }
+                });
+            }
         }
     };
 
-    public Executor(boolean readOnly, String ID) {
-        super(readOnly, ID);
+    public Executor(boolean readOnly, String ID, Category category) {
+        super(readOnly, ID, category);
     }
 
-    public void putAction(int score, Boolean act) {
+    public void enable(int score, Boolean act) {
         Acts.put(score, act);
     }
 
@@ -59,7 +62,7 @@ public class Executor extends Stat implements Base {
         if (Bukkit.getPlayer(UniqueID) != null && Bukkit.getPlayer(UniqueID).hasPermission("scorelib.bypass")) {
             return false;
         }
-        if (Acts.containsKey(score) && (mode.equals(Mode.TRIG) || mode.equals(Mode.MIX))) {
+        if (Acts.containsKey(score) && !mode.equals(Mode.CHECKER)) {
             Main.i.getServer().getPluginManager().callEvent(new ConditionsMetEvent(super.getID(), UniqueID, super.Map.get(UniqueID).score + 1));
         }
         return super.addScore(UniqueID, score);
@@ -70,14 +73,10 @@ public class Executor extends Stat implements Base {
     }
 
     public void start(int delay) {
-        if (mode.equals(Mode.CHECKER)) {
             r.runTaskTimerAsynchronously(Main.i, 0, delay);
-        }
     }
 
     public void stop() {
-        if (mode.equals(Mode.CHECKER)) {
             r.cancel();
-        }
     }
 }

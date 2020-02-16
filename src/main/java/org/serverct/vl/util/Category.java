@@ -15,13 +15,13 @@ public final class Category {
     }
 
     public Stat addStat(String ID, boolean ReadOnly) {
-        Stat a = new Stat(ReadOnly, ID);
+        Stat a = new Stat(ReadOnly, ID, this);
         statmap.put(ID, a);
         return a;
     }
 
     public Executor addExecutor(String ID, boolean ReadOnly) {
-        Executor a = new Executor(ReadOnly, ID);
+        Executor a = new Executor(ReadOnly, ID, this);
         execmap.put(ID, a);
         return a;
     }
