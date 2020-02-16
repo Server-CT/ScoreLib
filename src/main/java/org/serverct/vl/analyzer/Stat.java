@@ -1,6 +1,7 @@
 package org.serverct.vl.analyzer;
 
 import org.bukkit.Bukkit;
+import org.serverct.vl.Main;
 import org.serverct.vl.bean.Score;
 import org.serverct.vl.interfaces.Base;
 import org.serverct.vl.util.Category;
@@ -11,12 +12,12 @@ import java.util.UUID;
 
 public class Stat implements Base {
     HashMap<UUID, Score> Map = new HashMap<>();
-    private boolean readOnly;
     private String ID;
+    private Category c;
 
-    public Stat(boolean readOnly, String ID, Category category) {
+    public Stat(String ID, Category category) {
         this.ID = ID;
-        this.readOnly = readOnly;
+        c = category;
     }
 
     @Override
@@ -26,9 +27,11 @@ public class Stat implements Base {
 
     @Override
     public boolean addScore(UUID UniqueID, int score) {
-        if (readOnly) return false;
-        if (Bukkit.getPlayer(UniqueID) != null && Bukkit.getPlayer(UniqueID).hasPermission("scorelib.bypass")) {
+        if (Bukkit.getPlayer(UniqueID) != null && Bukkit.getPlayer(UniqueID).hasPermission("scorelib." + c.getName() + ".bypass")) {
             return false;
+        }
+        if (Main.debug) {
+            Main.i.getLogger().info("UUID: " + UniqueID.toString() + " | add: " + score + " | total:" + getScore(UniqueID));
         }
         Score s = Map.getOrDefault(UniqueID, new Score(0));
         s.score = s.score + score;
@@ -53,18 +56,21 @@ public class Stat implements Base {
     }
 
     public boolean setScore(UUID UniqueID, int score) {
-        if (readOnly) {
+        if (Bukkit.getPlayer(UniqueID) != null && Bukkit.getPlayer(UniqueID).hasPermission("scorelib." + c.getName() + ".bypass")) {
             return false;
+        }
+        if (Main.debug) {
+            Main.i.getLogger().info(UniqueID.toString() + " has been set to " + score);
         }
         Map.put(UniqueID, new Score(score));
         return true;
     }
 
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
     public String getID() {
         return ID;
+    }
+
+    public Category getCategory() {
+        return c;
     }
 }

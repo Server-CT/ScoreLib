@@ -15,13 +15,14 @@ public class Executor extends Stat implements Base {
     HashMap<Integer, Boolean> Acts = new HashMap<>();
     Mode mode = Mode.TRIG;
     int alive;
+    int increase;
     BukkitRunnable r = new BukkitRunnable() {
         @Override
         public void run() {
             Executor.super.Map.entrySet().forEach(a -> {
                 long time = System.currentTimeMillis();
                 if (time - a.getValue().lastTime >= alive && alive != -1) {
-                    Executor.super.setScore(a.getKey(), 0);
+                    Executor.super.setScore(a.getKey(), a.getValue().score - 1);
                 }
             });
             if (mode.equals(Mode.CHECKER) || mode.equals(Mode.MIX)) {
@@ -34,32 +35,26 @@ public class Executor extends Stat implements Base {
         }
     };
 
-    public Executor(boolean readOnly, String ID, Category category) {
-        super(readOnly, ID, category);
+    public Executor(String ID, Category category) {
+        super(ID, category);
     }
 
-    public void enable(int score, Boolean act) {
+    public void putAction(int score, Boolean act) {
         Acts.put(score, act);
     }
 
     public boolean clearAction() {
-        if (super.isReadOnly()) {
-            return false;
-        }
         Acts.clear();
         return true;
     }
 
     public boolean clearAction(int score) {
-        if (super.isReadOnly()) {
-            return false;
-        }
         Acts.remove(score);
         return true;
     }
 
     public boolean addScore(UUID UniqueID, int score) {
-        if (Bukkit.getPlayer(UniqueID) != null && Bukkit.getPlayer(UniqueID).hasPermission("scorelib.bypass")) {
+        if (Bukkit.getPlayer(UniqueID) != null && Bukkit.getPlayer(UniqueID).hasPermission("scorelib." + super.getCategory().getName() + ".bypass")) {
             return false;
         }
         if (Acts.containsKey(score) && !mode.equals(Mode.CHECKER)) {
@@ -72,11 +67,16 @@ public class Executor extends Stat implements Base {
         alive = second;
     }
 
-    public void start(int delay) {
-            r.runTaskTimerAsynchronously(Main.i, 0, delay);
+    public void start(int delay, int increase) {
+        this.increase = increase;
+        r.runTaskTimerAsynchronously(Main.i, 0, delay);
     }
 
     public void stop() {
-            r.cancel();
+        r.cancel();
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 }

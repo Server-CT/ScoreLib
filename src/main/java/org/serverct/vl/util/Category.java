@@ -14,15 +14,27 @@ public final class Category {
         this.name = name;
     }
 
-    public Stat addStat(String ID, boolean ReadOnly) {
-        Stat a = new Stat(ReadOnly, ID, this);
+    public String getName() {
+        return name;
+    }
+
+    public Stat addStat(String ID) {
+        Stat a = new Stat(ID, this);
         statmap.put(ID, a);
         return a;
     }
 
-    public Executor addExecutor(String ID, boolean ReadOnly) {
-        Executor a = new Executor(ReadOnly, ID, this);
+    public void addStat(Stat s) {
+        statmap.put(s.getID(), s);
+    }
+
+    public Executor addExecutor(String ID) {
+        Executor a = new Executor(ID, this);
         execmap.put(ID, a);
         return a;
+    }
+
+    public void addExecutor(Executor exec) {
+        execmap.put(exec.getID(), exec);
     }
 }
